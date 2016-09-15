@@ -13,3 +13,12 @@ is what will be changing in the DOM?
     * answers is an array of the same values in the same order
     * so does the state of `answers[]` ever really change? (I think no)
   - correct (answer index) (changes 4 times)
+  - counter for questions (changes 4 times)
+
+## The Action
+What 'action' functions do I need to write for the program to run properly?
+
+  - must add question object to the state from `QUESTIONS[obj]`.
+  - must change score.
+  - must reset score.
+  - must 
