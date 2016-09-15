@@ -40,7 +40,8 @@ var QUESTIONS = [
         correct: 3
     }
 ];
-
+// All var below deal with jQuery/DOM elements
+// do not use anywhere but Render functions
 var questionsPageElement = $('.questions-page');
 var questionCurrentElement = $('.question-current');
 var questionsTotalElement = $('.questions-total');
@@ -51,25 +52,26 @@ var resultsPageElement = $('.results-page');
 var scoreElement = $('.score');
 var restartButtonElement = $('.restart-button');
 
+// Render
 var showResults = function() {
     questionsPageElement.hide();
     resultsPageElement.show();
 };
-
+// Render
 var showQuestions = function() {
     resultsPageElement.hide();
     questionsPageElement.show();
 };
-
+// State Mod & Render (scoreElement)
 var resetScore = function() {
     scoreElement.text(0);
 };
-
+// State Mod & Render(scoreElement)
 var increaseScore = function() {
     var score = parseInt(scoreElement.text(), 10);
     scoreElement.text(score + 1);
 };
-
+// State Mod & Render(questionCurrentElement, questionElement, answersElement)
 var setQuestion = function(questionIndex) {
     var question = QUESTIONS[questionIndex];
     questionCurrentElement.text(questionIndex);
@@ -80,7 +82,7 @@ var setQuestion = function(questionIndex) {
         answersElement.append('<li><button type="button">' + answer + '</button></li>');
     }
 };
-
+// Event Listener, State Mod, & Render(answersElement)
 answersElement.on('click', 'button', function() {
     var choice = $(this).parent().index();
     var questionIndex = parseInt(questionCurrentElement.text(), 10);
@@ -96,7 +98,7 @@ answersElement.on('click', 'button', function() {
         showResults();
     }
 });
-
+// Event Listener & State Mod
 restartButtonElement.click(function() {
     setQuestion(0);
     resetScore();
