@@ -1,7 +1,9 @@
 Controller.prototype.getNextQuestion = function(state, element) {
 
   // Iterate over the array of question objects apply the callback.
-  _.each(this.state.items, addItem_Callback);
+  //_.each(this.state.items, addItem_Callback);
+
+  addItem_Callback(this.state.items[this.state.current_question], this.state.current_question, this.state.items)
 
   /* DOM Rendering Functions */
   function renderScore() {
@@ -18,23 +20,24 @@ Controller.prototype.getNextQuestion = function(state, element) {
   /* Callback Function */
   function addItem_Callback(question, index, questions) {
     // Is the Quiz in progress or not
-    if (this.state.items[this.state.index].display) {
-      this.state.items[this.state.index].display = false;
+  //  if (this.state.items[index].display) {
+      if(index === 0) renderQStart();
+
+      question.display = true;
       this.state.current_question += 1;
       // Have we gone passed the number of elements in the array?
       // TRUE: Show Score & Hide the Questions Page.
-      if (this.state.items[this.state.index + 1] === undefined) {
+      if (questions[index + 1] === undefined) {
         renderScore();
       }
       // FALSE: Render the next question in the array.
       else {
-        this.state.items[this.state.index + 1].display = true;
+        questions[index + 1].display = true;
         renderQInProgress();
-        this.state.index++;
 
         element.html(this.state.questionHTML);
       }
-    }
+  /*  }
     // Have we started the Quiz?
     // If not then start at question #1 & render question to the DOM.
     else if (this.state.questionHTML === null) {
@@ -43,10 +46,28 @@ Controller.prototype.getNextQuestion = function(state, element) {
       this.state.current_question += 1;
 
       element.html(this.state.questionHTML);
-    }
+    }*/
   }
 };
 
+function addItem_Callback(question, index, questions) {
+
+    if(index === 0) renderQStart();
+
+    question.display = true;
+    this.state.current_question += 1;
+
+    if (questions[index + 1] === undefined) {
+      renderScore();
+    }
+
+    else {
+      questions[index + 1].display = true;
+      renderQInProgress();
+
+      element.html(this.state.questionHTML);
+    }
+}
 
 
 

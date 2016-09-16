@@ -47,21 +47,22 @@ var QUESTIONS = [
 
 var Controller = function(state) {
   // represents the state object.
+  // this.state = myLibrary.state || state;
   this.state = state;
 };
 
 // These prototypes of our Constructor Controller() are the ACTIONS.
 // Meaning that these protoypes will change the state.
 
-Controller.prototype.addItem = function(state, QUESTIONS) {
+Controller.prototype.addItem = function(QUESTIONS) {
   this.state.items.push(QUESTIONS);
 };
 
-Controller.prototype.getNextQuestion = function(state, element) {
+Controller.prototype.getNextQuestion = function(element) {
 
   // Iterate over the array of question objects apply the callback.
-  _.each(this.state.items, addItem_Callback);
-
+  // _.each(this.state.items, addItem_Callback);
+  addItem_Callback(this.state.items[this.state.current_question], this.state.current_question, this.state.items);
   /* DOM Rendering Functions */
   function renderScore() {
     $('.questions-page').hide();
@@ -70,47 +71,35 @@ Controller.prototype.getNextQuestion = function(state, element) {
   }
   function renderQStart() {
     this.state.questionHTML = '<p>' + this.state.items[0].text + '</p>';
+    element.html(this.state.questionHTML);
   }
   function renderQInProgress() {
     this.state.questionHTML = '<p>' + this.state.items[this.state.index + 1].text + '</p>';
+    element.html(this.state.questionHTML);
+  }
+
+  function renderQuestion() {
+    this.state.questionHTML = '<p>' + this.state.items[this.state.current_question].text + '</p>';
+    element.html(this.state.questionHTML);
   }
   /* Callback Function */
   function addItem_Callback(question, index, questions) {
-    // Is the Quiz in progress or not
-    if (this.state.items[this.state.index].display) {
-      this.state.items[this.state.index].display = false;
-      this.state.current_question += 1;
-      // Have we gone passed the number of elements in the array?
-      // TRUE: Show Score & Hide the Questions Page.
-      if (this.state.items[this.state.index + 1] === undefined) {
+
+      if (question === undefined) {
         renderScore();
       }
-      // FALSE: Render the next question in the array.
+
       else {
-        this.state.items[this.state.index + 1].display = true;
-        renderQInProgress();
-        this.state.index++;
-
-        element.html(this.state.questionHTML);
-        // NOTE: MUST BREAK OUT!!!!!
-
+        renderQuestion();
+        question.display = true;
+        this.state.current_question += 1;
+        // element.html(this.state.questionHTML);
       }
-    }
-    // Have we started the Quiz?
-    // If not then start at question #1 & render question to the DOM.
-    else if (this.state.questionHTML === null) {
-      this.state.items[0].display = true;
-      renderQStart();
-      this.state.current_question += 1;
-
-      element.html(this.state.questionHTML);
-      // NOTE: MUST BREAK OUT!!!!!
-    }
   }
   // element.html(this.state.questionHTML); Should go here!!!!
 };
 
-Controller.prototype.renderAnswers = function(state, element) {
+Controller.prototype.renderAnswers = function(element) {
 
   /* Callback Function */
   function renderAnswers_Callback(answer) {
@@ -122,14 +111,15 @@ Controller.prototype.renderAnswers = function(state, element) {
   element.html(answersHTML);
 };
 
-Controller.prototype.checkAnswer = function(state, chosenAnswer) {
+Controller.prototype.checkAnswer = function(chosenAnswer) {
   console.log(this.state.answers[this.state.index]);
   if (this.state.answers[this.state.index] === chosenAnswer) {
     this.state.correct += 1;
   }
 };
 
-Controller.prototype.reset = function(state, element, element2) {
+Controller.prototype.reset = function(element, element2) {
+
   this.state.items = [];
   this.state.answers = this.state.answers; // NOTE: Answers never change state or order.
   this.state.current_question = 0;
@@ -151,6 +141,7 @@ Controller.prototype.reset = function(state, element, element2) {
 
 // Create a new instance of Controller Constructor Function.
 var myQuiz = new Controller(state);
+// var myQuiz2 = new Controller();
 
 
 
@@ -161,9 +152,9 @@ function initLoad() {
   $('.answers-btn').on('click', function(event) {
     event.preventDefault();
 
-    myQuiz.checkAnswer(state, $(this).text());
+    myQuiz.checkAnswer($(this).text());
     console.log($(this).text());
-    myQuiz.getNextQuestion(state, $('.question'));
+    myQuiz.getNextQuestion($('.question'));
     $('.question-current').empty().append(state.current_question);
   });
 
@@ -172,15 +163,16 @@ function initLoad() {
 
 function readyQuiz() {
   populateItems();
-  myQuiz.getNextQuestion(state, $('.question'));
-  myQuiz.renderAnswers(state, $('.answers'));
+  myQuiz.getNextQuestion($('.question'));
+  myQuiz.renderAnswers($('.answers'));
   $('.question-current').empty().append(state.current_question);
+  $('.questions-total').empty().append('4');
 }
 
 function restartQuiz() {
   $('.restart-button').on('click', function(event) {
     event.preventDefault();
-    myQuiz.reset(state, $('.results-page'), $('.questions-page'));
+    myQuiz.reset($('.results-page'), $('.questions-page'));
   });
 }
 
@@ -190,7 +182,7 @@ function populateItems() {
   // question represents an element of QUESTIONS[obj].
   function populateItems_Callback(question, index, QUESTIONS) {
     // Apply addItem to new instance of Controller.
-    myQuiz.addItem(state, question);
+    myQuiz.addItem(question);
   }
   // Iterate over QUESTIONS[obj] array & apply callback.
   _.each(QUESTIONS, populateItems_Callback);
