@@ -1,6 +1,6 @@
 // Global Variables
-
-var state = {
+var myLibrary = myLibrary || {};
+myLibrary.state = {
   // starting state of questions in DOM - none.
   items: [],
   // answers[] is static but will be changed out with every question iteration
@@ -20,7 +20,7 @@ var state = {
   questionHTML: null
 };
 
-var QUESTIONS = [
+myLibrary.QUESTIONS = [
     {
         text: '<:48:x<:65:=<:6C:$=$=$$~<:03:+$~<:ffffffffffffffbd:+$<:ffffffffffffffb1:+$<:57:~$~<:18:x+$~<:03:+$~<:06:x-$x<:0e:x-$=x<:43:x-$',
         answer: '0185',
@@ -47,44 +47,38 @@ var QUESTIONS = [
 
 var Controller = function(state) {
   // represents the state object.
-  // this.state = myLibrary.state || state;
-  this.state = state;
+  this.state = myLibrary.state || state;
+  // this.state = state;
 };
 
 // These prototypes of our Constructor Controller() are the ACTIONS.
 // Meaning that these protoypes will change the state.
 
-Controller.prototype.addItem = function(QUESTIONS) {
-  this.state.items.push(QUESTIONS);
+Controller.prototype.addItem = function(things) {
+  this.state.items.push(myLibrary.QUESTIONS);
 };
 
 Controller.prototype.getNextQuestion = function(element) {
 
-  // Iterate over the array of question objects apply the callback.
-  // _.each(this.state.items, addItem_Callback);
   addItem_Callback(this.state.items[this.state.current_question], this.state.current_question, this.state.items);
+
+
   /* DOM Rendering Functions */
   function renderScore() {
     $('.questions-page').hide();
     $('.results-page').css('display', 'block');
     $('.score').empty().append(this.state.correct);
   }
-  function renderQStart() {
-    this.state.questionHTML = '<p>' + this.state.items[0].text + '</p>';
-    element.html(this.state.questionHTML);
-  }
-  function renderQInProgress() {
-    this.state.questionHTML = '<p>' + this.state.items[this.state.index + 1].text + '</p>';
-    element.html(this.state.questionHTML);
-  }
-
   function renderQuestion() {
     this.state.questionHTML = '<p>' + this.state.items[this.state.current_question].text + '</p>';
     element.html(this.state.questionHTML);
   }
-  /* Callback Function */
-  function addItem_Callback(question, index, questions) {
 
+
+  /* Callback Function */
+  console.log(this.state.items[this.state.current_question]);
+  function addItem_Callback(question, index, questions) {
+      console.log(question);
       if (question === undefined) {
         renderScore();
       }
@@ -93,10 +87,8 @@ Controller.prototype.getNextQuestion = function(element) {
         renderQuestion();
         question.display = true;
         this.state.current_question += 1;
-        // element.html(this.state.questionHTML);
       }
   }
-  // element.html(this.state.questionHTML); Should go here!!!!
 };
 
 Controller.prototype.renderAnswers = function(element) {
@@ -140,8 +132,8 @@ Controller.prototype.reset = function(element, element2) {
 };
 
 // Create a new instance of Controller Constructor Function.
-var myQuiz = new Controller(state);
-// var myQuiz2 = new Controller();
+// var myQuiz = new Controller(state);
+var myQuiz = new Controller();
 
 
 
@@ -180,12 +172,12 @@ function populateItems() {
 
   /* Callback Funcion */
   // question represents an element of QUESTIONS[obj].
-  function populateItems_Callback(question, index, QUESTIONS) {
+  function populateItems_Callback(question, index, things) {
     // Apply addItem to new instance of Controller.
     myQuiz.addItem(question);
   }
   // Iterate over QUESTIONS[obj] array & apply callback.
-  _.each(QUESTIONS, populateItems_Callback);
+  _.each(myLibrary.QUESTIONS, populateItems_Callback);
 }
 
 $(document).ready(initLoad);
