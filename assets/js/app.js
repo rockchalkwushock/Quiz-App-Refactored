@@ -2,27 +2,18 @@
 /*
 *	Table of Contents
 *	1)	Initialization of Variables
-*     a)  NAMESPACE: myLibrary
+*     a)  NAMESPACE: MYLIBRARY
 *     b)  State Object
-*     c)  QUESTIONS[obj]
-*	2)	Constructors
-*     a)
-*     b)
-*	3)	Prototypes
-*     a)
-*     b)
-*	4)	Objects
-*     a)
-*     b)
-* 5)  Child Functions
+*     c)  questionList[obj]
+* 2)  Child Functions
 *     a) initLoad( )
 *     b) readyQuiz( )
 *     c) restartQuiz( )
 *     d) populateItems( )
-* 6)  Validation Checks
+* 3)  Validation Checks
 *     a)
 *     b)
-* 7)  App.js Execution
+* 4)  App.js Execution
 */
 // ########################################
 
@@ -30,24 +21,35 @@
 /* ---------- Initialization of Variables ---------- */
 // ####################################################
 
-/* ---------- a) NAMESPACE: myLibrary ---------- */
+/* ---------- a) NAMESPACE: MYLIBRARY ---------- */
 
-var myLibrary = myLibrary || {};
+var MYLIBRARY = MYLIBRARY || {};
 
 /* ---------- b) State Object ---------- */
 
-myLibrary.state = {
-  questions_array: [],
-  answers: ['0815', '2B', 'BAM128','Barely'],
-  score: 0,
+MYLIBRARY.state = {
+  // starting state of questions in DOM - none.
+  items: [],
+  // answers[] is static but will be changed out with every question iteration
+  answers: [
+    '0815',
+    '2B',
+    'BAM128',
+    'Barely'
+  ],
+  // starting value of question when DOM Loads.
   current_question: 0,
+  // starting value shown as score in DOM.
   correct: 0,
-  count: 0,
+  // starting value of counter
+  index: 0,
+  // sets questionHTML to be 'this.'
+  questionHTML: null
 };
 
-/* ---------- c) QUESTIONS[obj] ---------- */
+/* ---------- c) questionList[obj] ---------- */
 
-myLibrary.QUESTIONS = [
+MYLIBRARY.questionList = [
     {
         text: '<:48:x<:65:=<:6C:$=$=$$~<:03:+$~<:ffffffffffffffbd:+$<:ffffffffffffffb1:+$<:57:~$~<:18:x+$~<:03:+$~<:06:x-$x<:0e:x-$=x<:43:x-$',
         answer: '0185',
@@ -70,18 +72,6 @@ myLibrary.QUESTIONS = [
     }
 ];
 
-// ################################
-/* ---------- Objects ---------- */
-// ################################
-
-/* ---------- a) myQuiz ---------- */
-
-var myQuiz = new Controller();
-
-/* ---------- b)  ---------- */
-
-
-
 // ########################################
 /* ---------- Child Functions ---------- */
 // ########################################
@@ -95,9 +85,8 @@ function initLoad()
     event.preventDefault();
 
     myQuiz.checkAnswer($(this).text());
-    console.log($(this).text());
     myQuiz.getNextQuestion($('.question'));
-    $('.question-current').empty().append(state.current_question);
+    $('.question-current').empty().append(MYLIBRARY.state.current_question);
   });
 
   restartQuiz();
@@ -109,7 +98,7 @@ function readyQuiz() {
   populateItems();
   myQuiz.getNextQuestion($('.question'));
   myQuiz.renderAnswers($('.answers'));
-  $('.question-current').empty().append(state.current_question);
+  $('.question-current').empty().append(MYLIBRARY.state.current_question);
   $('.questions-total').empty().append('4');
 }
 
@@ -125,28 +114,8 @@ function restartQuiz() {
 /* ---------- d) populateItems ---------- */
 
 function populateItems() {
-
-  /* Callback Funcion */
-  // question represents an element of QUESTIONS[obj].
-  function populateItems_Callback(question, index, QUESTIONS) {
-    // Apply addItem to new instance of Controller.
-    myQuiz.addItem(question);
-  }
-  // Iterate over QUESTIONS[obj] array & apply callback.
-  _.each(QUESTIONS, populateItems_Callback);
+    myQuiz.addItem();
 }
-
-// ##########################################
-/* ---------- Validation Checks ---------- */
-// ##########################################
-
-/* ---------- a)  ---------- */
-
-
-
-/* ---------- b)  ---------- */
-
-
 
 // #########################################
 /* ---------- App.js Execution ---------- */
