@@ -4,18 +4,16 @@
 *	1)	Constructors
 *     a) Controller(state)
 *	2)	Prototypes
-*     a)
-*     b)
-*     c)
-*     d)
-*     e)
-*     f)
+*     a) addItem
+*     b) getNextQuestion
+*     c) processQuestion
+*     d) renderScore
+*     e) renderQuestion
+*     f) renderAnswers
+*     g) checkAnswer
+*     h) reset
 *	3)	Objects
-*     a)
-*     b)
-* 4)  Callbacks
-*     a)
-*     b)
+*     a) myQuiz
 */
 // ########################################
 
@@ -27,7 +25,7 @@
 
 var Controller = function(state) {
   // represents the state object.
-  this.state = myLibrary.state || state;
+  this.state = MYLIBRARY.state || state;
 };
 
 // ###################################
@@ -36,38 +34,42 @@ var Controller = function(state) {
 
 /* ---------- a) addItem ---------- */
 
-Controller.prototype.addItem = function(things) {
-  this.state.items.push(myLibrary.QUESTIONS);
+Controller.prototype.addItem = function() {
+  this.state.items = MYLIBRARY.questionList;
 };
 
 /* ---------- b) getNextQuestion ---------- */
 
 Controller.prototype.getNextQuestion = function(element) {
+  this.processQuestion(this.state.items[this.state.current_question], this.state.current_question, element);
+};
 
-  addItem_Callback(this.state.items[this.state.current_question], this.state.current_question, this.state.items);
-  /* DOM Rendering Functions */
-  function renderScore() {
-    $('.questions-page').hide();
-    $('.results-page').css('display', 'block');
-    $('.score').empty().append(this.state.correct);
+/* ---------- c) processQuestion ---------- */
+
+Controller.prototype.processQuestion = function(question, index, element) {
+  if (question === undefined) {
+    this.renderScore();
   }
-  function renderQuestion() {
-    this.state.questionHTML = '<p>' + this.state.items[this.state.current_question].text + '</p>';
+  else {
+    this.renderQuestion(question, element);
+    question.display = true;
+    this.state.current_question += 1;
+  }
+};
+
+/* ---------- d) renderScore ---------- */
+
+Controller.prototype.renderScore = function() {
+  $('.questions-page').hide();
+  $('.results-page').css('display', 'block');
+  $('.score').empty().append(this.state.correct);
+};
+
+/* ---------- e) renderQuestion ---------- */
+
+Controller.prototype.renderQuestion = function(question, element) {
+    this.state.questionHTML = '<p>' + question.text + '</p>';
     element.html(this.state.questionHTML);
-  }
-  /* Changes State */
-  function addItem_Callback(question, index, questions) {
-
-      if (question === undefined) {
-        renderScore();
-      }
-
-      else {
-        renderQuestion();
-        question.display = true;
-        this.state.current_question += 1;
-      }
-  }
 };
 
 /* ---------- c) renderAnswers ---------- */
@@ -87,9 +89,18 @@ Controller.prototype.renderAnswers = function(element) {
 /* ---------- d) checkAnswer ---------- */
 
 Controller.prototype.checkAnswer = function(chosenAnswer) {
-  console.log(this.state.answers[this.state.index]);
-  if (this.state.answers[this.state.index] === chosenAnswer) {
-    this.state.correct += 1;
+  if (this.state.index === 0) {
+    if (this.state.answers[this.state.index] === chosenAnswer) {
+      this.state.correct += 1;
+      this.state.index += 1;
+    }
+  } else {
+    if (this.state.answers[this.state.index] === chosenAnswer) {
+      this.state.correct += 1;
+      if (this.state.correct < 4) {
+        this.state.index += 1;
+      }
+    }
   }
 };
 
@@ -98,7 +109,7 @@ Controller.prototype.checkAnswer = function(chosenAnswer) {
 Controller.prototype.reset = function(element, element2) {
 
   this.state.items = [];
-  this.state.answers = this.state.answers; // NOTE: Answers never change state or order.
+  this.state.answers = this.state.answers;
   this.state.current_question = 0;
   this.state.correct = 0;
   this.state.index = 0;
@@ -107,21 +118,13 @@ Controller.prototype.reset = function(element, element2) {
   element.css('display', 'none');
   element2.show();
 
-  populateItems();
-
-  myQuiz.getNextQuestion($('.question'));
-
-  $('.question-current').empty().append(this.state.current_question);
-
-  myQuiz.renderAnswers($('.answers'));
+  initLoad();
 };
 
 // ################################
 /* ---------- Objects ---------- */
 // ################################
 
-/* ---------- a)  ---------- */
+/* ---------- a) myQuiz ---------- */
 
-
-
-/* ---------- b)  ---------- */
+var myQuiz = new Controller();
