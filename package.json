@@ -2,7 +2,7 @@
   "name": "test",
   "version": "1.0.0",
   "description": "Practice with Removing the State &amp; Advanced OOP",
-  "main": "js/index.js",
+  "main": "assets/js/app.js",
   "scripts": {
     "mkdir": "mkdir -p build",
     "build": "npm run clean && npm run mkdir && npm run build:html && npm run build:js",
