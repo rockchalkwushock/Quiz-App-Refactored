@@ -1,9 +1,11 @@
-/* jshint esversion: 6 */
+import $ from 'jquery';
+import ControllerFactory, {MYLIBRARY} from './controller';
+
 // ########################################
 /*
 *	Table of Contents
-*	1)	Webpack Imports
-*     a)  control
+*	1)	Objects
+*     a)  myQuiz
 * 2)  Child Functions
 *     a) initLoad( )
 *     b) readyQuiz( )
@@ -14,21 +16,22 @@
 // ########################################
 
 // ########################################
-/* ---------- Webpack Imports ---------- */
+/* --------------- Objects ------------- */
 // ########################################
 
-/* ---------- a) control ---------- */
+/* ------------- a) myQuiz ------------- */
 
-let control = require('./controller');
+let myQuiz = ControllerFactory.getController();
 
 // ########################################
 /* ---------- Child Functions ---------- */
 // ########################################
 
-/* ---------- a) initLoad ---------- */
+/* ------------ a) initLoad ------------ */
 function initLoad()
 {
   readyQuiz();
+
 
   $('.answers-btn').on('click', function(event) {
     event.preventDefault();
@@ -39,10 +42,9 @@ function initLoad()
   });
 
   restartQuiz();
-  initLoad();
 }
 
-/* ---------- b) readyQuiz ---------- */
+/* ------------ b) readyQuiz ----------- */
 
 function readyQuiz() {
   populateItems();
@@ -52,23 +54,24 @@ function readyQuiz() {
   $('.questions-total').empty().append('4');
 }
 
-/* ---------- c) restartQuiz ---------- */
+/* ----------- c) restartQuiz ---------- */
 
 function restartQuiz() {
   $('.restart-button').on('click', function(event) {
     event.preventDefault();
     myQuiz.reset($('.results-page'), $('.questions-page'));
+    initLoad();
   });
 }
 
-/* ---------- d) populateItems ---------- */
+/* ---------- d) populateItems --------- */
 
 function populateItems() {
     myQuiz.addItem();
 }
 
-// #########################################
-/* ---------- App.js Execution ---------- */
-// #########################################
+// ########################################
+/* ---------- App.js Execution --------- */
+// ########################################
 
 $(document).ready(initLoad);

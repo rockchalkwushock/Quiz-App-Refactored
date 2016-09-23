@@ -1,13 +1,17 @@
+import $ from 'jquery';
+import _ from 'lodash';
+export const MYLIBRARY = MYLIBRARY || {};
+
+
 // ########################################
 /*
 *	Table of Contents
 * 1)  Initialization of Variables
-*     a)  NAMESPACE: MYLIBRARY
-*     b)  State Object
-*     c)  questionList[obj]
-*	2)	Constructors
-*     a) Controller(state)
-*	3)	Prototypes
+*     a)  State Object
+*     n)  questionList[obj]
+*	2)	Classes
+*     a) ControllerFactory
+*	3)	Methods of ControllerFactory
 *     a) addItem
 *     b) getNextQuestion
 *     c) processQuestion
@@ -16,22 +20,14 @@
 *     f) renderAnswers
 *     g) checkAnswer
 *     h) reset
-*	4)	Objects
-*     a) myQuiz
 */
 // ########################################
 
+// ########################################
+/* ---- Initialization of Variables ---- */
+// ########################################
 
-
-// ####################################################
-/* ---------- Initialization of Variables ---------- */
-// ####################################################
-
-/* ---------- a) NAMESPACE: MYLIBRARY ---------- */
-
-var MYLIBRARY = MYLIBRARY || {};
-
-/* ---------- b) State Object ---------- */
+/* -------- a) State Object ------------ */
 
 MYLIBRARY.state = {
   // starting state of questions in DOM - none.
@@ -53,7 +49,7 @@ MYLIBRARY.state = {
   questionHTML: null
 };
 
-/* ---------- c) questionList[obj] ---------- */
+/* -------- b) questionList[obj] ------- */
 
 MYLIBRARY.questionList = [
     {
@@ -78,114 +74,98 @@ MYLIBRARY.questionList = [
     }
 ];
 
-// #####################################
-/* ---------- Constructors ---------- */
-// #####################################
+// ########################################
+/* -------------- Classes -------------- */
+// ########################################
 
-/* ---------- a) Controller ---------- */
+/* -------- a) ControllerFactory ------- */
 
-var Controller = function(state) {
-  // represents the state object.
-  this.state = MYLIBRARY.state || state;
-};
-
-// ###################################
-/* ---------- Prototypes ---------- */
-// ###################################
-
-/* ---------- a) addItem ---------- */
-
-Controller.prototype.addItem = function() {
-  this.state.items = MYLIBRARY.questionList;
-};
-
-/* ---------- b) getNextQuestion ---------- */
-
-Controller.prototype.getNextQuestion = function(element) {
-  this.processQuestion(this.state.items[this.state.current_question], this.state.current_question, element);
-};
-
-/* ---------- c) processQuestion ---------- */
-
-Controller.prototype.processQuestion = function(question, index, element) {
-  if (question === undefined) {
-    this.renderScore();
-  }
-  else {
-    this.renderQuestion(question, element);
-    question.display = true;
-    this.state.current_question += 1;
-  }
-};
-
-/* ---------- d) renderScore ---------- */
-
-Controller.prototype.renderScore = function() {
-  $('.questions-page').hide();
-  $('.results-page').css('display', 'block');
-  $('.score').empty().append(this.state.correct);
-};
-
-/* ---------- e) renderQuestion ---------- */
-
-Controller.prototype.renderQuestion = function(question, element) {
-    this.state.questionHTML = '<p>' + question.text + '</p>';
-    element.html(this.state.questionHTML);
-};
-
-/* ---------- c) renderAnswers ---------- */
-
-Controller.prototype.renderAnswers = function(element) {
-
-  /* Callback Function */
-  function renderAnswers_Callback(answer) {
-    return '<li><button class="answers-btn" type="button">' + answer + '</button></li>';
-  }
-  // Iterate over the answers array & apply the callback.
-  var answersHTML = _.map(this.state.answers, renderAnswers_Callback);
-
-  element.html(answersHTML);
-};
-
-/* ---------- d) checkAnswer ---------- */
-
-Controller.prototype.checkAnswer = function(chosenAnswer) {
-  if (this.state.index === 0) {
-    if (this.state.answers[this.state.index] === chosenAnswer) {
-      this.state.correct += 1;
-      this.state.index += 1;
+export default class ControllerFactory {
+    // constructor will build new objects.
+    constructor(state) {
+      this.state = MYLIBRARY.state || state;
     }
-  } else {
-    if (this.state.answers[this.state.index] === chosenAnswer) {
-      this.state.correct += 1;
-      if (this.state.correct < 4) {
-        this.state.index += 1;
+
+    // Methods of constructor
+    // Will be inherited to all protoypes of constructor.
+
+    /* Static Method (via MDN):
+    The static keyword defines a static method for a class.
+    Static methods are called without instantiating their class and
+    are also not callable when the class is instantiated.
+    Static methods are often used to create utility
+    functions for an application.
+    */
+    static getController() {
+      return new ControllerFactory();
+    }
+
+    addItem() {
+      this.state.items = MYLIBRARY.questionList;
+    }
+
+    getNextQuestion(element) {
+      this.processQuestion(this.state.items[this.state.current_question], this.state.current_question, element);
+    }
+
+    processQuestion(question, index, element) {
+      if (question === undefined) {
+        this.renderScore();
+      }
+      else {
+        this.renderQuestion(question, element);
+        question.display = true;
+        this.state.current_question += 1;
       }
     }
-  }
-};
 
-/* ---------- e) reset ---------- */
+    renderScore() {
+      $('.questions-page').hide();
+      $('.results-page').css('display', 'block');
+      $('.score').empty().append(this.state.correct);
+    }
 
-Controller.prototype.reset = function(element, element2) {
+    renderQuestion(question, element) {
+      this.state.questionHTML = '<p>' + question.text + '</p>';
+      element.html(this.state.questionHTML);
+    }
 
-  this.state.items = [];
-  this.state.answers = this.state.answers;
-  this.state.current_question = 0;
-  this.state.correct = 0;
-  this.state.index = 0;
-  this.state.questionHTML = null;
+    renderAnswers(element) {
+      /* Callback Function */
+      function renderAnswers_Callback(answer) {
+        return '<li><button class="answers-btn" type="button">' + answer + '</button></li>';
+      }
+      // Iterate over the answers array & apply the callback.
+      var answersHTML = _.map(this.state.answers, renderAnswers_Callback);
 
-  element.css('display', 'none');
-  element2.show();
+      element.html(answersHTML);
+    }
 
-  initLoad();
-};
+    checkAnswer(chosenAnswer) {
+      if (this.state.index === 0) {
+        if (this.state.answers[this.state.index] === chosenAnswer) {
+          this.state.correct += 1;
+          this.state.index += 1;
+        }
+      } else {
+        if (this.state.answers[this.state.index] === chosenAnswer) {
+          this.state.correct += 1;
+          if (this.state.correct < 4) {
+            this.state.index += 1;
+          }
+        }
+      }
+    }
 
-// ################################
-/* ---------- Objects ---------- */
-// ################################
+    reset(element, element2) {
+      this.state.items = [];
+      this.state.answers = this.state.answers;
+      this.state.current_question = 0;
+      this.state.correct = 0;
+      this.state.index = 0;
+      this.state.questionHTML = null;
 
-/* ---------- a) myQuiz ---------- */
-
-var myQuiz = new Controller();
+      element.css('display', 'none');
+      element2.show();
+    }
+}
