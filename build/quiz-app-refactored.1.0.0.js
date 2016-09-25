@@ -10460,36 +10460,44 @@
 	  // Methods of constructor
 	  // Will be inherited to all protoypes of constructor.
 	
-	  /* Static Method (via MDN):
-	  The static keyword defines a static method for a class.
-	  Static methods are called without instantiating their class and
-	  are also not callable when the class is instantiated.
-	  Static methods are often used to create utility
-	  functions for an application.
-	  */
-	
 	
 	  _createClass(ControllerFactory, [{
 	    key: 'addItem',
+	
+	    // Pushes the questionList[] to be stored as the items[] in state object
 	    value: function addItem() {
 	      this.state.items = MYLIBRARY.questionList;
 	    }
+	    // Takes in .question HTML element
+	    // Runs processQuestion and passes the current question indexed in the items[].
+	
 	  }, {
 	    key: 'getNextQuestion',
 	    value: function getNextQuestion(element) {
 	      this.processQuestion(this.state.items[this.state.current_question], this.state.current_question, element);
 	    }
+	    // Will yield question.
+	    // Or final score.
+	    // NOTE: Changes value of state.current_question +1.
+	
 	  }, {
 	    key: 'processQuestion',
-	    value: function processQuestion(question, index, element) {
+	    value: function processQuestion(question, currentQuestion, element) {
+	      // when question > # elements of items[] becomes undefined.
 	      if (question === undefined) {
+	        // render final score.
 	        this.renderScore();
 	      } else {
+	        // will print question to screen in .question HTML element
 	        this.renderQuestion(question, element);
+	        // sets current question display state to true.
 	        question.display = true;
+	        // increase the current question index by 1.
 	        this.state.current_question += 1;
 	      }
 	    }
+	    // Will render the final score to the DOM throuhg state.correct.
+	
 	  }, {
 	    key: 'renderScore',
 	    value: function renderScore() {
@@ -10497,12 +10505,18 @@
 	      (0, _jquery2.default)('.results-page').css('display', 'block');
 	      (0, _jquery2.default)('.score').empty().append(this.state.correct);
 	    }
+	    // Will render quetsion to the .question HTML element.
+	    // NOTE: Changes the value of state.questionHTML
+	
 	  }, {
 	    key: 'renderQuestion',
 	    value: function renderQuestion(question, element) {
+	      // state.questionHTML takes on the value of
 	      this.state.questionHTML = '<p>' + question.text + '</p>';
 	      element.html(this.state.questionHTML);
 	    }
+	    // Will render the possible answers to the .answers HTML element.
+	
 	  }, {
 	    key: 'renderAnswers',
 	    value: function renderAnswers(element) {
@@ -10512,9 +10526,12 @@
 	      }
 	      // Iterate over the answers array & apply the callback.
 	      var answersHTML = _lodash2.default.map(this.state.answers, renderAnswers_Callback);
-	
 	      element.html(answersHTML);
 	    }
+	    // Will verify that selected answer matches the question answer.
+	    // NOTE: changes state.correct value.
+	    // NOTE: changes state.index value.
+	
 	  }, {
 	    key: 'checkAnswer',
 	    value: function checkAnswer(chosenAnswer) {

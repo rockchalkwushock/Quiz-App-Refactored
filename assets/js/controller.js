@@ -88,48 +88,50 @@ export default class ControllerFactory {
 
     // Methods of constructor
     // Will be inherited to all protoypes of constructor.
-
-    /* Static Method (via MDN):
-    The static keyword defines a static method for a class.
-    Static methods are called without instantiating their class and
-    are also not callable when the class is instantiated.
-    Static methods are often used to create utility
-    functions for an application.
-    */
     static getController() {
       return new ControllerFactory();
     }
-
+    // Pushes the questionList[] to be stored as the items[] in state object
     addItem() {
       this.state.items = MYLIBRARY.questionList;
     }
-
+    // Takes in .question HTML element
+    // Runs processQuestion and passes the current question indexed in the items[].
     getNextQuestion(element) {
       this.processQuestion(this.state.items[this.state.current_question], this.state.current_question, element);
     }
-
-    processQuestion(question, index, element) {
+    // Will yield question.
+    // Or final score.
+    // NOTE: Changes value of state.current_question +1.
+    processQuestion(question, currentQuestion, element) {
+      // when question > # elements of items[] becomes undefined.
       if (question === undefined) {
+        // render final score.
         this.renderScore();
       }
       else {
+        // will print question to screen in .question HTML element
         this.renderQuestion(question, element);
+        // sets current question display state to true.
         question.display = true;
+        // increase the current question index by 1.
         this.state.current_question += 1;
       }
     }
-
+    // Will render the final score to the DOM throuhg state.correct.
     renderScore() {
       $('.questions-page').hide();
       $('.results-page').css('display', 'block');
       $('.score').empty().append(this.state.correct);
     }
-
+    // Will render quetsion to the .question HTML element.
+    // NOTE: Changes the value of state.questionHTML
     renderQuestion(question, element) {
+      // state.questionHTML takes on the value of
       this.state.questionHTML = '<p>' + question.text + '</p>';
       element.html(this.state.questionHTML);
     }
-
+    // Will render the possible answers to the .answers HTML element.
     renderAnswers(element) {
       /* Callback Function */
       function renderAnswers_Callback(answer) {
@@ -137,10 +139,11 @@ export default class ControllerFactory {
       }
       // Iterate over the answers array & apply the callback.
       var answersHTML = _.map(this.state.answers, renderAnswers_Callback);
-
       element.html(answersHTML);
     }
-
+    // Will verify that selected answer matches the question answer.
+    // NOTE: changes state.correct value.
+    // NOTE: changes state.index value.
     checkAnswer(chosenAnswer) {
       if (this.state.index === 0) {
         if (this.state.answers[this.state.index] === chosenAnswer) {
